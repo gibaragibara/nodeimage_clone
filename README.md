@@ -21,7 +21,7 @@
 npm install
 npm start   # 默认 http://localhost:3000
 ```
-启动后访问 `http://localhost:3000`。第一次进入会弹出登录框，输入任意新用户名/密码可注册并登录，随后即可上传与查看历史。
+启动后访问 `http://localhost:3000`。默认账号密码：`admin / admin`，登录后可在“修改账号密码”中更改。
 
 ## 环境变量
 | 变量名 | 说明 | 默认值 |
@@ -70,7 +70,47 @@ curl -X GET "http://localhost:3000/api/v1/list" \
   -H "X-API-Key: <你的API密钥>"
 ```
 
-## 部署指南
+## Docker 部署
+
+### 直接运行
+已推送的镜像：`lx969788249/nodeimage_clone:latest`
+
+```bash
+docker pull lx969788249/nodeimage_clone:latest
+docker run -d --name nodeimage \
+  -p 3000:3000 \
+  -e SESSION_SECRET=change_me \
+  -e BASE_URL=https://img.example.com \
+  -v nodeimage_uploads:/app/uploads \
+  -v nodeimage_data:/app/data \
+  lx969788249/nodeimage_clone:latest
+```
+访问 `http://localhost:3000` 登录（admin/admin），再按需修改账号密码。
+
+### Docker Compose
+新建 `docker-compose.yml`：
+```yaml
+services:
+  nodeimage:
+    image: lx969788249/nodeimage_clone:latest
+    ports:
+      - "3000:3000"
+    environment:
+      SESSION_SECRET: change_me
+      # BASE_URL: https://img.example.com
+    volumes:
+      - nodeimage_uploads:/app/uploads
+      - nodeimage_data:/app/data
+volumes:
+  nodeimage_uploads:
+  nodeimage_data:
+```
+执行：
+```bash
+docker compose up -d
+```
+
+## 部署指南（本机或服务器）
 1. **安装依赖**
    ```bash
    npm install --production
