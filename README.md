@@ -1,5 +1,9 @@
 # Nodeimage 克隆版 - 优化版
 
+[![Docker Build](https://github.com/gibaragibara/nodeimage_clone/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/gibaragibara/nodeimage_clone/actions/workflows/docker-publish.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/gibara/nodeimage_clone)](https://hub.docker.com/r/gibara/nodeimage_clone)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 ## 简介
 
 自己闲来无事仿照 nodeimage 搓了一个复刻版图床出来，本来想着自己用，后来想了一下还是分享吧。
@@ -55,7 +59,7 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/你的用户名/nodeimage_clone.git
+git clone https://github.com/gibaragibara/nodeimage_clone.git
 cd nodeimage_clone
 
 # 2. 启动服务
@@ -80,7 +84,7 @@ docker run -d \
   -e SESSION_SECRET=your_random_secret \
   -v $(pwd)/nodeimage_data/uploads:/app/uploads \
   -v $(pwd)/nodeimage_data/data:/app/data \
-  你的docker用户名/nodeimage_clone:latest
+  gibara/nodeimage_clone:latest
 ```
 
 ### 方式三：本地运行
@@ -89,7 +93,7 @@ docker run -d \
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/你的用户名/nodeimage_clone.git
+git clone https://github.com/gibaragibara/nodeimage_clone.git
 cd nodeimage_clone
 
 # 2. 安装依赖
@@ -185,10 +189,10 @@ BASE_URL=https://img.example.com
 
 ```bash
 # 构建镜像
-docker build -t 你的用户名/nodeimage_clone:latest .
+docker build -t gibara/nodeimage_clone:latest .
 
 # 推送到 Docker Hub
-docker push 你的用户名/nodeimage_clone:latest
+docker push gibara/nodeimage_clone:latest
 ```
 
 ### 多架构构建
@@ -201,7 +205,7 @@ docker buildx inspect --bootstrap
 # 构建并推送多架构镜像
 docker buildx build \
   --platform linux/amd64,linux/arm64,linux/arm/v7 \
-  -t 你的用户名/nodeimage_clone:latest \
+  -t gibara/nodeimage_clone:latest \
   --push .
 ```
 
