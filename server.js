@@ -137,6 +137,48 @@ app.post('/api/auth/login', asyncHandler(async (req, res) => {
   });
 }));
 
+// 注册
+app.post('/api/auth/register', asyncHandler(async (req, res) => {
+  const username = (req.body.username || '').trim().slice(0, 30);
+  const password = req.body.password || '';
+
+  if (!username || !password) {
+    return res.status(400).json({ message: '用户名和密码不能为空' });
+  }
+
+  if (username.length < 3) {
+    return res.status(400).json({ message: '用户名至少需要3个字符' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: '密码至少需要6个字符' });
+  }
+
+  // 检查用户名是否已存在
+  const existingUser = dbService.findUserByUsername(username);
+  if (existingUser) {
+    return res.status(409).json({ message: '用户名已存在' });
+  }
+
+  // 创建新用户
+  const newUser = {
+    id: generateId(16),
+    username: username,
+    passwordHash: await bcrypt.hash(password, 10),
+    apiKey: generateApiKey(),
+    level: 0,  // 普通用户权限
+    createdAt: Date.now()
+  };
+
+  dbService.addUser(newUser);
+  logger.info('新用户注册成功', { username: newUser.username, userId: newUser.id });
+
+  res.json({
+    message: '注册成功，请登录',
+    user: { username: newUser.username, level: newUser.level }
+  });
+}));
+
 // 登出
 app.post('/api/auth/logout', asyncHandler(async (req, res) => {
   const userId = req.session?.userId;
@@ -146,13 +188,16 @@ app.post('/api/auth/logout', asyncHandler(async (req, res) => {
   });
 }));
 
-// 更新账号密码
-const handleCredentialUpdate = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword, newUsername } = req.body || {};
-  const nextUsername = (newUsername || '').trim();
+// 更新密码（只能修改密码，不能修改用户名）
+app.post('/api/user/password', requireAuth, asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body || {};
 
-  if (!oldPassword || !newPassword || !nextUsername) {
-    return res.status(400).json({ message: '缺少必填项' });
+  if (!oldPassword || !newPassword) {
+    return res.status(400).json({ message: '请提供原密码和新密码' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: '新密码至少需要6个字符' });
   }
 
   const user = dbService.findUserById(req.user.id);
@@ -165,20 +210,17 @@ const handleCredentialUpdate = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: '原密码错误' });
   }
 
+  // 只更新密码，不修改用户名
   dbService.updateUser(user.id, {
-    username: nextUsername.slice(0, 30),
     passwordHash: await bcrypt.hash(newPassword, 10)
   });
 
   req.session.destroy(() => { });
 
-  logger.info('用户更新凭证', { userId: user.id, newUsername: nextUsername });
+  logger.info('用户更新密码', { userId: user.id, username: user.username });
 
-  res.json({ message: '账号密码已更新，请重新登录', username: nextUsername });
-});
-
-app.post('/api/user/password', requireAuth, handleCredentialUpdate);
-app.post('/api/user/credentials', requireAuth, handleCredentialUpdate);
+  res.json({ message: '密码已更新，请重新登录' });
+}));
 
 // 获取 API Key
 app.get('/api/user/api-key', requireAuth, asyncHandler(async (req, res) => {
