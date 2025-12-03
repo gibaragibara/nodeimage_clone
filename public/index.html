@@ -37,7 +37,7 @@
                 </svg>
               </div>
               <div class="user-menu" id="userMenu" style="display: none;">
-                <button class="tailwind-btn user-menu-item" id="changePasswordBtn">修改账号密码</button>
+                <button class="tailwind-btn user-menu-item" id="changePasswordBtn">修改密码</button>
                 <button class="tailwind-btn user-menu-item logout-btn" id="logoutBtn">注销</button>
               </div>
             </div>
@@ -362,6 +362,40 @@
           <div class="auth-actions">
             <button class="auth-btn-large" id="loginBtn">登录</button>
           </div>
+          <div style="text-align: center; margin-top: 16px; color: #666;">
+            <span>还没有账号？</span>
+            <a href="#" id="showRegisterBtn" style="color: #3b82f6; text-decoration: none; font-weight: 500;">立即注册</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="registerModal" style="display:none;">
+    <div class="modal-content auth-modal">
+      <div class="auth-content">
+        <div class="auth-header">
+          <h3>用户注册</h3>
+          <p>创建新账号开始使用图床</p>
+        </div>
+        <div class="auth-steps" style="margin-bottom:12px;">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content"><p>用户名至少3个字符，密码至少6个字符。</p></div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content"><p>每个用户的图片数据完全隔离。</p></div>
+          </div>
+        </div>
+        <div class="auth-form">
+          <input type="text" id="registerUsername" placeholder="用户名（至少3个字符）" autocomplete="username">
+          <input type="password" id="registerPassword" placeholder="密码（至少6个字符）" autocomplete="new-password">
+          <input type="password" id="registerPasswordConfirm" placeholder="确认密码" autocomplete="new-password">
+          <div class="auth-actions">
+            <button class="auth-btn-large" id="registerBtn">注册</button>
+            <button class="auth-btn-large" id="backToLoginBtn" style="background:transparent;color:#666;border:1px solid #ddd;">返回登录</button>
+          </div>
         </div>
       </div>
     </div>
@@ -371,16 +405,13 @@
     <div class="modal-content auth-modal">
       <div class="auth-content">
         <div class="auth-header">
-          <h3>修改账号密码</h3>
+          <h3>修改密码</h3>
           <p>更新后需要重新登录</p>
         </div>
         <div class="auth-form">
           <input type="password" id="changeOldPassword" placeholder="原密码" autocomplete="current-password">
-          <div id="newCredFields" style="display:none; width:100%;">
-            <input type="text" id="changeNewUsername" placeholder="新的用户名" autocomplete="username">
-            <input type="password" id="changeNewPassword" placeholder="新的密码" autocomplete="new-password">
-            <input type="password" id="changeNewPasswordConfirm" placeholder="再次输入新的密码" autocomplete="new-password">
-          </div>
+          <input type="password" id="changeNewPassword" placeholder="新密码" autocomplete="new-password">
+          <input type="password" id="changeNewPasswordConfirm" placeholder="确认新密码" autocomplete="new-password">
           <div class="auth-actions">
             <button class="auth-btn-large" id="changeCredsSubmit">保存修改</button>
             <button class="auth-btn-large" id="changeCredsCancel" style="background:transparent;color:#666;border:1px solid #ddd;">取消</button>

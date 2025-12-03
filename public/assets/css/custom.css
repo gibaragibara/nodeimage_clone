@@ -471,3 +471,40 @@ body, html {
   z-index: 1;
   transition: transform 0.2s ease, width 0.2s ease, background 0.15s ease;
 }
+
+/* 深色模式下格式按钮增强 */
+[data-theme=dark] .history-card .format-btn-small {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme=dark] .history-card .format-btn-small:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme=dark] .upload-result-actions .format-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme=dark] .upload-result-actions .format-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme=dark] .icon-format-row {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme=dark] .format-icon-btn {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme=dark] .format-icon-btn:hover {
+  color: var(--color-primary);
+}

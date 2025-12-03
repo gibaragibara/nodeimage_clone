@@ -63,6 +63,13 @@ const els = {
   loginUsername: document.getElementById('loginUsername'),
   loginPassword: document.getElementById('loginPassword'),
   loginBtn: document.getElementById('loginBtn'),
+  registerModal: document.getElementById('registerModal'),
+  registerUsername: document.getElementById('registerUsername'),
+  registerPassword: document.getElementById('registerPassword'),
+  registerPasswordConfirm: document.getElementById('registerPasswordConfirm'),
+  registerBtn: document.getElementById('registerBtn'),
+  showRegisterBtn: document.getElementById('showRegisterBtn'),
+  backToLoginBtn: document.getElementById('backToLoginBtn'),
   userControls: document.getElementById('userControls'),
   userMenuContainer: document.querySelector('.user-menu-container'),
   username: document.getElementById('username'),
@@ -72,10 +79,8 @@ const els = {
   changePasswordBtn: document.getElementById('changePasswordBtn'),
   changeCredsModal: document.getElementById('changeCredsModal'),
   changeOldPassword: document.getElementById('changeOldPassword'),
-  changeNewUsername: document.getElementById('changeNewUsername'),
   changeNewPassword: document.getElementById('changeNewPassword'),
   changeNewPasswordConfirm: document.getElementById('changeNewPasswordConfirm'),
-  newCredFields: document.getElementById('newCredFields'),
   changeCredsSubmit: document.getElementById('changeCredsSubmit'),
   changeCredsCancel: document.getElementById('changeCredsCancel'),
   userLevel: document.getElementById('userLevel'),
@@ -128,8 +133,6 @@ const ICONS = {
   markdown: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18v10H3z"/><path d="M7 15V9l2 2 2-2v6M15 15l3-3-3-3"/>\n</svg>'
 };
 
-// 修改账号密码流程的原密码验证标记
-let credVerified = false;
 
 function applyTheme(theme) {
   const next = theme === 'dark' ? 'dark' : 'light';
@@ -190,15 +193,11 @@ function toggleAuthModal(show) {
 }
 
 function toggleChangeCredsModal(show) {
-  if (!els.changeCredsModal) return;
   els.changeCredsModal.style.display = show ? 'flex' : 'none';
   if (show) {
     els.changeOldPassword.value = '';
-    els.changeNewUsername.value = '';
     els.changeNewPassword.value = '';
     if (els.changeNewPasswordConfirm) els.changeNewPasswordConfirm.value = '';
-    if (els.newCredFields) els.newCredFields.style.display = 'none';
-    credVerified = false;
   }
 }
 
@@ -840,6 +839,65 @@ async function loginUser() {
   }
 }
 
+async function registerUser() {
+  const username = els.registerUsername.value.trim();
+  const password = els.registerPassword.value;
+  const passwordConfirm = els.registerPasswordConfirm.value;
+  
+  if (!username || !password || !passwordConfirm) {
+    showNotification('请填写所有字段', 'error');
+    return;
+  }
+  
+  if (username.length < 3) {
+    showNotification('用户名至少3个字符', 'error');
+    return;
+  }
+  
+  if (password.length < 6) {
+    showNotification('密码至少6个字符', 'error');
+    return;
+  }
+  
+  if (password !== passwordConfirm) {
+    showNotification('两次密码输入不一致', 'error');
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.message || '注册失败');
+    
+    showNotification(data.message || '注册成功，请登录', 'success');
+    
+    // 清空注册表单
+    els.registerUsername.value = '';
+    els.registerPassword.value = '';
+    els.registerPasswordConfirm.value = '';
+    
+    // 返回登录页面
+    toggleRegisterModal(false);
+    toggleAuthModal(true);
+    
+    // 自动填充用户名
+    els.loginUsername.value = username;
+    els.loginPassword.focus();
+  } catch (err) {
+    console.error(err);
+    showNotification(err.message, 'error');
+  }
+}
+
+function toggleRegisterModal(show) {
+  els.registerModal.style.display = show ? 'flex' : 'none';
+}
+
 function setupEventListeners() {
   els.themeToggle.addEventListener('click', () => applyTheme(state.theme === 'light' ? 'dark' : 'light'));
   els.settingsBtn.addEventListener('click', (e) => {
@@ -972,12 +1030,6 @@ function setupEventListeners() {
         toggleAuthModal(true);
         return;
       }
-      credVerified = false;
-      if (els.changeOldPassword) els.changeOldPassword.value = '';
-      if (els.changeNewUsername) els.changeNewUsername.value = '';
-      if (els.changeNewPassword) els.changeNewPassword.value = '';
-      if (els.changeNewPasswordConfirm) els.changeNewPasswordConfirm.value = '';
-      if (els.newCredFields) els.newCredFields.style.display = 'none';
       toggleChangeCredsModal(true);
     });
   }
@@ -1002,53 +1054,36 @@ function setupEventListeners() {
         toggleAuthModal(true);
         return;
       }
+      
       const oldPassword = (els.changeOldPassword.value || '').trim();
-      // 如果还未验证原密码，先验证当前用户的原密码
-      if (!credVerified) {
-        if (!oldPassword) {
-          showNotification('请输入原密码', 'error');
-          return;
-        }
-        try {
-          const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: state.user.username, password: oldPassword }),
-            credentials: 'include'
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data?.message || '原密码验证失败');
-          credVerified = true;
-          if (els.newCredFields) els.newCredFields.style.display = 'block';
-          showNotification('原密码验证通过，请输入新用户名和新密码', 'success');
-        } catch (err) {
-          console.error(err);
-          showNotification(err.message || '原密码错误', 'error');
-        }
-        return;
-      }
-
-      const newUsername = (els.changeNewUsername.value || '').trim();
       const newPassword = (els.changeNewPassword.value || '').trim();
       const newPasswordConfirm = (els.changeNewPasswordConfirm.value || '').trim();
-      if (!newUsername || !newPassword || !newPasswordConfirm) {
-        showNotification('请完整填写新用户名和两次新密码', 'error');
+      
+      if (!oldPassword || !newPassword || !newPasswordConfirm) {
+        showNotification('请填写所有字段', 'error');
         return;
       }
+      
+      if (newPassword.length < 6) {
+        showNotification('新密码至少需要6个字符', 'error');
+        return;
+      }
+      
       if (newPassword !== newPasswordConfirm) {
         showNotification('两次输入的新密码不一致', 'error');
         return;
       }
+      
       try {
-        const res = await fetch('/api/user/credentials', {
+        const res = await fetch('/api/user/password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ oldPassword, newUsername, newPassword }),
+          body: JSON.stringify({ oldPassword, newPassword }),
           credentials: 'include'
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data?.message || '修改失败');
-        showNotification(data.message || '账号密码已更新，请重新登录', 'success');
+        showNotification(data.message || '密码已更新，请重新登录', 'success');
         toggleChangeCredsModal(false);
         await logoutUser();
         toggleAuthModal(true);
@@ -1060,6 +1095,33 @@ function setupEventListeners() {
   }
 
   els.loginBtn.addEventListener('click', () => loginUser());
+  els.loginUsername.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') loginUser();
+  });
+  els.loginPassword.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') loginUser();
+  });
+
+  // 注册相关事件
+  els.showRegisterBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleAuthModal(false);
+    toggleRegisterModal(true);
+  });
+  
+  els.backToLoginBtn.addEventListener('click', () => {
+    toggleRegisterModal(false);
+    toggleAuthModal(true);
+  });
+  
+  els.registerBtn.addEventListener('click', () => registerUser());
+  els.registerPasswordConfirm.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') registerUser();
+  });
+  
+  els.registerModal.addEventListener('click', (e) => {
+    if (e.target === els.registerModal) toggleRegisterModal(false);
+  });
 
   // 只保留一个返回按钮
   els.backBtn2.style.display = 'none';
