@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 
 # 复制 package.json 并安装依赖
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm install --production && npm cache clean --force
 
 # 复制应用代码和新增模块
 COPY config.js ./
