@@ -29,13 +29,13 @@ git push -u origin main
 docker login
 
 # 构建镜像
-docker build -t gibara/nodeimage_clone:latest .
+docker build -t jbyyy/nodeimage_clone:latest .
 
 # 测试镜像
-docker run -d -p 7878:7878 --name test_nodeimage gibara/nodeimage_clone:latest
+docker run -d -p 7878:7878 --name test_nodeimage jbyyy/nodeimage_clone:latest
 
 # 如果测试成功，推送到 Docker Hub
-docker push gibara/nodeimage_clone:latest
+docker push jbyyy/nodeimage_clone:latest
 
 # 清理测试容器
 docker stop test_nodeimage && docker rm test_nodeimage
@@ -53,7 +53,7 @@ docker buildx inspect --bootstrap
 # 构建并推送多架构镜像
 docker buildx build \
   --platform linux/amd64,linux/arm64,linux/arm/v7 \
-  -t gibara/nodeimage_clone:latest \
+  -t jbyyy/nodeimage_clone:latest \
   --push .
 ```
 
@@ -93,7 +93,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: gibara/nodeimage_clone
+          images: jbyyy/nodeimage_clone
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -125,7 +125,7 @@ docker run -d \
   -e SESSION_SECRET=随机字符串 \
   -v ./data:/app/data \
   -v ./uploads:/app/uploads \
-  gibara/nodeimage_clone:latest
+  jbyyy/nodeimage_clone:latest
 ```
 
 或使用 docker-compose:
@@ -133,7 +133,7 @@ docker run -d \
 ```yaml
 services:
   nodeimage:
-    image: gibara/nodeimage_clone:latest
+    image: jbyyy/nodeimage_clone:latest
     ports:
       - "7878:7878"
     environment:
@@ -149,12 +149,12 @@ services:
 
 ```bash
 # 构建时指定版本
-docker build -t gibara/nodeimage_clone:v1.0.0 .
-docker build -t gibara/nodeimage_clone:latest .
+docker build -t jbyyy/nodeimage_clone:v1.0.0 .
+docker build -t jbyyy/nodeimage_clone:latest .
 
 # 推送所有标签
-docker push gibara/nodeimage_clone:v1.0.0
-docker push gibara/nodeimage_clone:latest
+docker push jbyyy/nodeimage_clone:v1.0.0
+docker push jbyyy/nodeimage_clone:latest
 ```
 
 ### Q: 如何测试 Docker 镜像？

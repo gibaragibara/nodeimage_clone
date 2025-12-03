@@ -1,7 +1,7 @@
 # Nodeimage 克隆版 - 优化版
 
 [![Docker Build](https://github.com/gibaragibara/nodeimage_clone/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/gibaragibara/nodeimage_clone/actions/workflows/docker-publish.yml)
-[![Docker Pulls](https://img.shields.io/docker/pulls/gibara/nodeimage_clone)](https://hub.docker.com/r/gibara/nodeimage_clone)
+[![Docker Pulls](https://img.shields.io/docker/pulls/jbyyy/nodeimage_clone)](https://hub.docker.com/r/jbyyy/nodeimage_clone)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 简介
@@ -84,7 +84,7 @@ docker run -d \
   -e SESSION_SECRET=your_random_secret \
   -v $(pwd)/nodeimage_data/uploads:/app/uploads \
   -v $(pwd)/nodeimage_data/data:/app/data \
-  gibara/nodeimage_clone:latest
+  jbyyy/nodeimage_clone:latest
 ```
 
 ### 方式三：本地运行
@@ -189,10 +189,10 @@ BASE_URL=https://img.example.com
 
 ```bash
 # 构建镜像
-docker build -t gibara/nodeimage_clone:latest .
+docker build -t jbyyy/nodeimage_clone:latest .
 
 # 推送到 Docker Hub
-docker push gibara/nodeimage_clone:latest
+docker push jbyyy/nodeimage_clone:latest
 ```
 
 ### 多架构构建
@@ -205,7 +205,7 @@ docker buildx inspect --bootstrap
 # 构建并推送多架构镜像
 docker buildx build \
   --platform linux/amd64,linux/arm64,linux/arm/v7 \
-  -t gibara/nodeimage_clone:latest \
+  -t jbyyy/nodeimage_clone:latest \
   --push .
 ```
 

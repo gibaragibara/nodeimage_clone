@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nodeimage:
-    image: nodeimage-clone:latest
+    image: jbyyy/nodeimage_clone:latest
     build:
       context: .
       dockerfile: Dockerfile

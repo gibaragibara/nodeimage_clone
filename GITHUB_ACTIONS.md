@@ -71,9 +71,9 @@ GitHub Actions 会在以下情况自动运行：
 
 | 触发方式 | 生成的标签 | 示例 |
 |---------|-----------|------|
-| 推送到 main 分支 | `latest`, `main` | `gibara/nodeimage_clone:latest` |
-| 推送标签 v1.0.0 | `v1.0.0`, `1.0`, `1`, `latest` | `gibara/nodeimage_clone:v1.0.0` |
-| Pull Request | `pr-123` | `gibara/nodeimage_clone:pr-123` |
+| 推送到 main 分支 | `latest`, `main` | `jbyyy/nodeimage_clone:latest` |
+| 推送标签 v1.0.0 | `v1.0.0`, `1.0`, `1`, `latest` | `jbyyy/nodeimage_clone:v1.0.0` |
+| Pull Request | `pr-123` | `jbyyy/nodeimage_clone:pr-123` |
 
 ## 发布新版本
 
@@ -96,10 +96,10 @@ GitHub Actions 会自动：
 
 ```bash
 # 拉取最新版本
-docker pull gibara/nodeimage_clone:latest
+docker pull jbyyy/nodeimage_clone:latest
 
 # 拉取指定版本
-docker pull gibara/nodeimage_clone:v1.0.0
+docker pull jbyyy/nodeimage_clone:v1.0.0
 ```
 
 ## 查看构建日志
@@ -163,7 +163,7 @@ platforms: linux/amd64  # 只构建 amd64
 - [ ] 提交并推送代码到 GitHub
 - [ ] 检查 Actions 标签页确认构建成功
 - [ ] 在 Docker Hub 验证镜像已发布
-- [ ] 测试拉取镜像: `docker pull gibara/nodeimage_clone:latest`
+- [ ] 测试拉取镜像: `docker pull jbyyy/nodeimage_clone:latest`
 
 ---
 
