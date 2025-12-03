@@ -1,7 +1,27 @@
+# 依赖
 node_modules
-uploads
 npm-debug.log*
 yarn-error.log
+yarn.lock
 package-lock.json
+
+# 上传和数据文件
+uploads
 data/db.json
+logs
+
+# 测试文件
+test.js
+*.test.js
+
+# IDE
+.vscode
+.idea
 .DS_Store
+
+# Git
+.git
+
+# 临时文件
+*.tmp
+*.log

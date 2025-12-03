@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  nodeimage:
+    image: nodeimage-clone:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nodeimage_clone
+    restart: unless-stopped
+    ports:
+      - "7878:7878"
+    environment:
+      # 服务器配置
+      - NODE_ENV=production
+      - PORT=7878
+      # 如果使用反向代理，取消下面的注释并设置你的域名
+      # - BASE_URL=https://img.example.com
+      - TRUST_PROXY=true
+      
+      # 会话密钥（重要：请修改为随机字符串）
+      - SESSION_SECRET=change_me_to_random_string
+      
+      # 上传配置
+      - MAX_FILE_SIZE=104857600  # 100MB
+      
+      # 图片处理
+      - DEFAULT_WEBP_QUALITY=90
+      - THUMBNAIL_SIZE=400
+      - THUMBNAIL_QUALITY=80
+      
+      # 数据库缓存
+      - DB_CACHE_FLUSH_INTERVAL=5000
+      - DB_CACHE_FLUSH_THRESHOLD=10
+      
+      # 定时清理
+      - CLEANUP_EXPIRED_INTERVAL=3600000  # 1小时
+      - ENABLE_AUTO_CLEANUP=true
+      
+      # 日志配置
+      - LOG_LEVEL=info
+      - LOG_TO_FILE=false
+    volumes:
+      # 持久化数据
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      # 可选：如果启用日志文件
+      # - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:7878/api/stats', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+# 创建持久化卷
+volumes:
+  data:
+  uploads:
