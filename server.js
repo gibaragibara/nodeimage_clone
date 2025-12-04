@@ -5,6 +5,7 @@
 import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import multer from 'multer';
 import fs from 'fs-extra';
 import path from 'path';
@@ -53,13 +54,25 @@ app.set('trust proxy', config.trustProxy);
 // 中间件
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// CORS 配置 - 允许凭证传递
+app.use(cors({
+  origin: true, // 允许所有来源,生产环境建议指定具体域名
+  credentials: true // 允许发送 cookies
+}));
+
 app.use(cookieParser());
 app.use(
   session({
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: config.sessionMaxAge }
+    cookie: {
+      maxAge: config.sessionMaxAge,
+      httpOnly: true, // 防止 XSS 攻击
+      sameSite: 'lax', // CSRF 保护
+      secure: false // 开发环境设为 false,生产环境 HTTPS 时改为 true
+    }
   })
 );
 
