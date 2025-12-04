@@ -57,24 +57,32 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS 配置 - 允许凭证传递
 app.use(cors({
-  origin: true, // 允许所有来源,生产环境建议指定具体域名
+  origin: config.corsOrigin, // 生产环境建议设置具体域名
   credentials: true // 允许发送 cookies
 }));
 
 app.use(cookieParser());
-app.use(
-  session({
-    secret: config.sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: config.sessionMaxAge,
-      httpOnly: true, // 防止 XSS 攻击
-      sameSite: 'lax', // CSRF 保护
-      secure: false // 开发环境设为 false,生产环境 HTTPS 时改为 true
-    }
-  })
-);
+
+// Session 配置 - 根据环境自动设置 secure
+const sessionConfig = {
+  secret: config.sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: config.sessionMaxAge,
+    httpOnly: true, // 防止 XSS 攻击
+    sameSite: 'lax', // CSRF 保护
+    // 根据环境和 trust proxy 自动设置 secure
+    secure: config.isProduction || (config.trustProxy && process.env.USE_HTTPS === 'true')
+  }
+};
+
+// 在反向代理环境下，cookie 需要配置为 auto
+if (config.trustProxy) {
+  sessionConfig.cookie.secure = 'auto';
+}
+
+app.use(session(sessionConfig));
 
 // 静态文件服务
 app.use('/uploads', express.static(uploadDir));

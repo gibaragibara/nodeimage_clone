@@ -19,6 +19,12 @@ export const config = {
     port: parseNumber(process.env.PORT, 7878, 1, 65535),
     baseUrl: process.env.BASE_URL ? process.env.BASE_URL.replace(/\/$/, '') : '',
     trustProxy: parseBool(process.env.TRUST_PROXY, true),
+    
+    // 环境检测
+    isProduction: process.env.NODE_ENV === 'production',
+    
+    // CORS 配置
+    corsOrigin: process.env.CORS_ORIGIN || true, // 生产环境建议设置具体域名
 
     // 会话配置
     sessionSecret: process.env.SESSION_SECRET || 'nodeimage-clone-secret',
